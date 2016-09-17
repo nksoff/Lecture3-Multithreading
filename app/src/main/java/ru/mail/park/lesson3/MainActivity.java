@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.d("saveState" + this.hashCode(), text1State + " " + text2State);
         outState.putString("text1State", text1State);
         outState.putString("text2State", text2State);
         outState.putString("text1", text1.getText().toString());
@@ -135,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
             default:
                 throw new IllegalArgumentException("Unknown url: " + url);
         }
-        Log.d("setStateText" + this.hashCode(), state + " " + (url.equals(URL_1) ? "1" : "2"));
     }
 
     private void moveStateInit(String url) {
@@ -164,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeState(String url, String textState, @Nullable String loadedText) {
-        Log.d("changeState" + this.hashCode(), textState + " " + (url.equals(URL_1) ? "1" : "2"));
         switch (textState) {
             case TEXT_STATE_INIT:
                 moveStateInit(url);
