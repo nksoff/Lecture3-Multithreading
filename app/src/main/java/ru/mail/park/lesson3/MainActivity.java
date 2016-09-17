@@ -137,20 +137,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void moveStateInit(String url) {
         final TextView text = getTextViewByUrl(url);
-        text.setText("Click me");
+        text.setText(R.string.click_me);
         text.setOnClickListener(getClickListenerForUrl(url));
     }
 
     private void moveStateLoading(String url) {
         final TextView text = getTextViewByUrl(url);
-        text.setText("Loading...");
+        text.setText(R.string.loading);
         text.setOnClickListener(null);
         UrlDownloader.getInstance().load(url);
     }
 
     private void moveStateUnavailable(String url) {
         final TextView text = getTextViewByUrl(url);
-        text.setText("Data unavailable");
+        text.setText(R.string.data_unavailable);
         text.setOnClickListener(getClickListenerForUrl(url));
     }
 
