@@ -38,7 +38,7 @@ public class UrlDownloader {
     public void load(final String url) {
         String cachedResult = cache.get(url);
         if (cachedResult != null) {
-            callback.onLoaded(url, cachedResult);
+            notifyLoaded(url, cachedResult);
             return;
         }
 

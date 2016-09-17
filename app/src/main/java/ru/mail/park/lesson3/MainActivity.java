@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,20 +50,44 @@ public class MainActivity extends AppCompatActivity {
         text1 = (TextView) findViewById(R.id.text1);
         text2 = (TextView) findViewById(R.id.text2);
 
-        changeState(URL_1, TEXT_STATE_INIT);
-        changeState(URL_2, TEXT_STATE_INIT);
-
         UrlDownloader.getInstance().setCallback(new UrlDownloader.Callback() {
             @Override
             public void onLoaded(String key, String value) {
                 onTextLoaded(key, value);
             }
         });
+
+        if (savedInstanceState != null &&
+                savedInstanceState.get("text1") != null &&
+                savedInstanceState.get("text2") != null &&
+                savedInstanceState.get("text1State") != null &&
+                savedInstanceState.get("text2State") != null
+                ) {
+            changeState(URL_1, savedInstanceState.getString("text1State"), savedInstanceState.getString("text1"));
+            changeState(URL_2, savedInstanceState.getString("text2State"), savedInstanceState.getString("text2"));
+        } else {
+            changeState(URL_1, TEXT_STATE_INIT);
+            changeState(URL_2, TEXT_STATE_INIT);
+        }
+
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.d("saveState" + this.hashCode(), text1State + " " + text2State);
+        outState.putString("text1State", text1State);
+        outState.putString("text2State", text2State);
+        outState.putString("text1", text1.getText().toString());
+        outState.putString("text2", text2.getText().toString());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        text1.setOnClickListener(null);
+        text2.setOnClickListener(null);
+        UrlDownloader.getInstance().setCallback(null);
+        super.onDestroy();
     }
 
     private void loadFromUrl(String url) {
@@ -74,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         final boolean showToast = loadedText != null;
         changeState(url, state, loadedText);
 
-        if(showToast)
+        if (showToast)
             Toast.makeText(MainActivity.this, loadedText, Toast.LENGTH_SHORT).show();
     }
 
@@ -97,6 +122,20 @@ public class MainActivity extends AppCompatActivity {
                 loadFromUrl(loadUrl);
             }
         };
+    }
+
+    private void setStateText(String url, String state) {
+        switch(url) {
+            case URL_1:
+                text1State = state;
+                break;
+            case URL_2:
+                text2State = state;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown url: " + url);
+        }
+        Log.d("setStateText" + this.hashCode(), state + " " + (url.equals(URL_1) ? "1" : "2"));
     }
 
     private void moveStateInit(String url) {
@@ -125,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeState(String url, String textState, @Nullable String loadedText) {
+        Log.d("changeState" + this.hashCode(), textState + " " + (url.equals(URL_1) ? "1" : "2"));
         switch (textState) {
             case TEXT_STATE_INIT:
                 moveStateInit(url);
@@ -141,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 throw new IllegalArgumentException("Unknown text state: " + textState);
         }
+        setStateText(url, textState);
     }
 
     private void changeState(String url, String textState) {
